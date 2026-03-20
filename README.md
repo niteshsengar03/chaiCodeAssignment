@@ -30,6 +30,8 @@
 ## Github-Class Assignment
 
 - [x] js-conditionals
+  - Screenshot:
+    ![conditionals](./assets/js-condition-ans.png)
 - [ ] js-datatypes-foundation
 - [ ] js-functions
 - [ ] js-loops
