@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MyWay Full Demo</title>
+  </head>
+  <body>
+
+    <!-- Spacing -->
+    <div class="myway-p-12 myway-m-8 myway-bg-lightgray">
+      Spacing Test (padding + margin)
+    </div>
+
+    <!-- Colors -->
+    <div class="myway-bg-red myway-text-white myway-p-10">
+      Background + Text Color
+    </div>
+
+    <!-- Typography -->
+    <p class="myway-fs-20 myway-text-center">
+      Font size + text alignment
+    </p>
+
+    <!-- Borders -->
+    <div class="myway-b-2 myway-br-8 myway-p-10">
+      Border + Border Radius
+    </div>
+
+    <!-- Layout -->
+    <div class="myway-d-flex myway-p-10 myway-bg-green">
+      Flex Layout
+    </div>
+
+    <div class="myway-d-block myway-m-10">
+      Block Layout
+    </div>
+
+    <!-- Mixed utilities -->
+    <div class="myway-d-flex myway-p-20 myway-bg-blue myway-text-white myway-br-10">
+      Mixed Utilities
+    </div>
+
+    <!-- Edge Cases -->
+
+    <!-- Invalid utility -->
+    <div class="myway-xyz-10">
+      Invalid utility (should be ignored)
+    </div>
+
+    <!-- Missing value -->
+    <div class="myway-p">
+      Missing value (ignore)
+    </div>
+
+    <!-- Wrong format -->
+    <div class="myway--12">
+      Wrong format (ignore)
+    </div>
+
+    <!-- Non-numeric spacing -->
+    <div class="myway-p-abc">
+      Invalid value (ignore or skip)
+    </div>
+
+    <!-- Duplicate conflicting utilities -->
+    <div class="myway-p-10 myway-p-20">
+      Last one should win (padding: 20px)
+    </div>
+
+    <!-- Extra unknown classes -->
+    <div class="random-class myway-m-15 another-class">
+      Should still apply margin
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
