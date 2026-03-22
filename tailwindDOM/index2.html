@@ -3,61 +3,79 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chai UI Dark</title>
+  <title>Chai UI - Dark</title>
 </head>
-<body class="chai-m-0 chai-bg-black">
+
+<body class="chai-m-0 chai-bg-gray900 chai-text-white">
 
   <!-- Navbar -->
-  <nav class="chai-d-flex chai-p-16 chai-bg-gray">
-    <h2 class="chai-text-white chai-m-0">☕ ChaiUI</h2>
+  <nav class="chai-d-flex chai-jc-between chai-ai-center chai-p-16 chai-bg-gray700">
+    <h2 class="chai-m-0">☕ ChaiUI</h2>
+    <div class="chai-d-flex chai-gap-10">
+      <span class="chai-text-gray">Home</span>
+      <span class="chai-text-gray">Docs</span>
+      <span class="chai-text-gray">About</span>
+    </div>
   </nav>
 
-  <!-- Hero -->
-  <section class="chai-p-20 chai-ta-center">
-    <h1 class="chai-text-white chai-fs-24 chai-m-10">
-      Build your own Tailwind ⚡
-    </h1>
-    <p class="chai-text-gray chai-m-10">
-      This entire UI is styled using your JS engine.
-    </p>
+  <!-- Hero Section -->
+  <section class="chai-d-flex chai-ai-center chai-jc-center chai-p-40 chai-ta-center">
+    <div>
+      <h1 class="chai-fs-32 chai-m-10">Build CSS Engines, Not Just UIs</h1>
+      <p class="chai-text-gray chai-m-10">
+        You built this entire design system using JavaScript.
+      </p>
+      <button class="chai-p-12 chai-bg-blue500 chai-br-8 chai-text-white chai-cursor-pointer">
+        Get Started
+      </button>
+    </div>
   </section>
 
-  <!-- Cards -->
-  <section class="chai-d-flex chai-p-20">
+  <!-- Cards Section -->
+  <section class="chai-p-20">
 
-    <div class="chai-m-10 chai-p-16 chai-bg-gray chai-br-8">
-      <h3 class="chai-text-white chai-fs-18">⚙️ Engine</h3>
-      <p class="chai-text-gray">
-        Parses class names and injects styles dynamically.
-      </p>
+    <h2 class="chai-ta-center chai-m-20">Features</h2>
+
+    <div class="chai-d-flex chai-gap-20 chai-jc-center">
+
+      <div class="chai-bg-gray700 chai-p-20 chai-br-10 chai-w-250">
+        <h3 class="chai-m-10">⚙️ Engine</h3>
+        <p class="chai-text-gray">
+          Runtime parsing of utility classes into inline styles.
+        </p>
+      </div>
+
+      <div class="chai-bg-gray700 chai-p-20 chai-br-10 chai-w-250">
+        <h3 class="chai-m-10">🧠 Smart Mapping</h3>
+        <p class="chai-text-gray">
+          Map-driven architecture makes it scalable.
+        </p>
+      </div>
+
+      <div class="chai-bg-gray700 chai-p-20 chai-br-10 chai-w-250">
+        <h3 class="chai-m-10">🚀 Extendable</h3>
+        <p class="chai-text-gray">
+          Add utilities without touching core logic.
+        </p>
+      </div>
+
     </div>
-
-    <div class="chai-m-10 chai-p-16 chai-bg-gray chai-br-8">
-      <h3 class="chai-text-white chai-fs-18">🧠 Smart Parsing</h3>
-      <p class="chai-text-gray">
-        Utility-based design with map-driven logic.
-      </p>
-    </div>
-
-    <div class="chai-m-10 chai-p-16 chai-bg-gray chai-br-8">
-      <h3 class="chai-text-white chai-fs-18">🚀 Extendable</h3>
-      <p class="chai-text-gray">
-        Easily add new utilities without touching core logic.
-      </p>
-    </div>
-
   </section>
 
-  <!-- Button Section -->
-  <section class="chai-p-20 chai-ta-center">
-    <button class="chai-p-10 chai-bg-green chai-text-white chai-br-6">
-      Get Started
-    </button>
+  <!-- CTA Section -->
+  <section class="chai-d-flex chai-jc-center chai-p-30">
+    <div class="chai-bg-blue600 chai-p-20 chai-br-10 chai-ta-center">
+      <h3>Start Building Today</h3>
+      <p class="chai-text-black">Turn your ideas into systems.</p>
+      <button class="chai-p-10 chai-bg-green500 chai-br-6 chai-text-white chai-cursor-pointer">
+        Try Now
+      </button>
+    </div>
   </section>
 
   <!-- Footer -->
-  <footer class="chai-p-16 chai-bg-gray chai-ta-center">
-    <p class="chai-text-gray">Built with your custom CSS engine</p>
+  <footer class="chai-bg-gray700 chai-p-16 chai-ta-center">
+    <p class="chai-text-gray">© 2026 ChaiUI. Built from scratch.</p>
   </footer>
 
   <script src="script.js"></script>

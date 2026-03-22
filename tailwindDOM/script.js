@@ -1,60 +1,71 @@
 
-// - property → actual CSS property
-// - type → how to process the value
-//   - "spacing" → numeric → add "px"
-//   - "color"   → use value directly
-//   - "keyword" → use value directly (like flex, center, block)
-
-
-
 
 const utilityMap = {
-    // Spacing padding and margin
-    p: {
-        property: "padding",
-        type: "spacing",
-    },
-    m: {
-        property: "margin",
-        type: "spacing",
-    },
+    // Spacing
+    p: { property: "padding", type: "spacing" },
+    m: { property: "margin", type: "spacing" },
 
-    // Colors background color and text color
-    bg: {
-        property: "background",
-        type: "color",
-    },
-    text: {
-        property: "color",
-        type: "color",
-    },
+    // Colors
+    bg: { property: "background", type: "color" },
+    text: { property: "color", type: "color" },
 
-    // Typography fontsize and textalign
-    fs: {
-        property: "font-size",
-        type: "spacing",
-    },
-    ta: {
-        property: "text-align",
-        type: "keyword",
-    },
+    // Typography
+    fs: { property: "font-size", type: "spacing" },
+    ta: { property: "text-align", type: "keyword" },
 
     // Borders
-    b: {
-        property: "border-width",
-        type: "spacing",
-    },
-    br: {
-        property: "border-radius",
-        type: "spacing",
-    },
+    b: { property: "border-width", type: "spacing" },
+    br: { property: "border-radius", type: "spacing" },
+    bs: { property: "border-style", type: "keyword" },
 
-    // Layout  flex
-    d: {
-        property: "display",
-        type: "keyword",
-    }
-}
+    // Layout
+    d: { property: "display", type: "keyword" },
+    jc: { property: "justify-content", type: "keyword" },
+    ai: { property: "align-items", type: "keyword" },
+    gap: { property: "gap", type: "spacing" },
+
+    // Size
+    w: { property: "width", type: "spacing" },
+    h: { property: "height", type: "spacing" },
+
+    // Misc
+    cursor: { property: "cursor", type: "keyword" },
+    op: { property: "opacity", type: "keyword" }
+};
+
+const colorMap = {
+    // Reds
+    red: "#ef4444",
+    red500: "#ef4444",
+    red600: "#dc2626",
+
+    // Blues
+    blue: "#3b82f6",
+    blue500: "#3b82f6",
+    blue600: "#2563eb",
+
+    // Greens
+    green: "#22c55e",
+    green500: "#22c55e",
+    green600: "#16a34a",
+
+    // Gray scale (important for UI)
+    gray: "#6b7280",
+    gray500: "#6b7280",
+    gray700: "#374151",
+    gray900: "#111827",
+
+    // Base colors
+    white: "#ffffff",
+    black: "#000000",
+
+    // Extra useful UI colors
+    yellow: "#eab308",
+    purple: "#a855f7",
+    pink: "#ec4899"
+};
+
+
 
 const a = document.querySelectorAll('[class]');
 a.forEach(myfunction);
@@ -76,7 +87,16 @@ function myfunction(element) {
                             finalValue = value + "px"
                         else return;
                     } else if (type === "color") {
-                        finalValue = value;
+                        if (value.startsWith("#")) {
+                            finalValue = value;
+                        }
+                        else if (Object.hasOwn(colorMap, value)) {
+                            finalValue = colorMap[value];
+                        }
+                        else {
+                            finalValue = value; // allows "red", "blue" if browser supports
+                        }
+
                     } else if (type === "keyword") {
                         finalValue = value;
                     }
