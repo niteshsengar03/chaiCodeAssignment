@@ -1,5 +1,3 @@
-
-
 const utilityMap = {
     // Spacing
     p: { property: "padding", type: "spacing" },
@@ -34,32 +32,31 @@ const utilityMap = {
 };
 
 const colorMap = {
-    // Reds
+
     red: "#ef4444",
     red500: "#ef4444",
     red600: "#dc2626",
 
-    // Blues
+
     blue: "#3b82f6",
     blue500: "#3b82f6",
     blue600: "#2563eb",
 
-    // Greens
+
     green: "#22c55e",
     green500: "#22c55e",
     green600: "#16a34a",
 
-    // Gray scale (important for UI)
+  
     gray: "#6b7280",
     gray500: "#6b7280",
     gray700: "#374151",
     gray900: "#111827",
 
-    // Base colors
+
     white: "#ffffff",
     black: "#000000",
 
-    // Extra useful UI colors
     yellow: "#eab308",
     purple: "#a855f7",
     pink: "#ec4899"
@@ -68,19 +65,24 @@ const colorMap = {
 
 
 const a = document.querySelectorAll('[class]');
+// console.log(a);
 a.forEach(myfunction);
 function myfunction(element) {
+    // console.log(element.classList);
     element.classList.forEach((ele) => {
         // console.log(typeof ele)
+        console.log(ele);
         if (ele.startsWith("chai-")) {
+            // console.log(ele);
             const arr = ele.split("-");
+            // console.log(arr);
             if (arr.length === 3) {
                 const utility = (arr[1]);
                 const value = (arr[2]);
                 if (Object.hasOwn(utilityMap, utility)) {
                     const property = utilityMap[utility].property;
                     const type = utilityMap[utility].type
-                    console.log(property, type);
+                    // console.log(property, type);
                     let finalValue;
                     if (type === "spacing") {
                         if (!isNaN(Number(value)))
