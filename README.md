@@ -2,6 +2,10 @@
 
 ## Main-class Assignment
 
+
+### OOJ
+- [ ] cerate own polyfill library for string arrays to learn prototye and this 
+
 ### 5 - NodeJs Internals and Architecture
 - [ ] Read blog on Node.js
 - [ ] Make video on libuv
