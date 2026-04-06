@@ -1,0 +1,63 @@
+title instagram-store 
+
+customers {
+    customer_id int pk
+    name string
+    phone_no string
+    address string
+}
+products {
+    product_id int pk
+    name string
+    description string
+    category string
+    type  enum('thrift','handmade') 
+    price decimal
+}
+inventory {
+    inventory_id int pk
+    product_id int fk  // FK to products
+    size string
+    color string
+    condition string
+    quantity int
+}
+orders {
+    order_id int pk
+    customer_id int fk // FK to customers
+    order_date datetime
+    total_amount decimal
+    payment_status string
+    shipping_status string
+}
+order_items {
+    order_item_id int pk
+    order_id int fk     // FK to orders
+    inventory_id int fk  // FK to inventory
+    quantity int
+    price decimal
+}
+payments {
+    payment_id int pk
+    order_id int fk   // FK to orders
+    payment_date datetime
+    amount decimal
+    method string
+    status string
+}
+shipments {
+    shipment_id int pk
+    order_id int fk  // FK to orders
+    shipped_date datetime
+    delivered_date datetime
+    status string
+    tracking_number string
+}
+
+orders.customer_id > customers.customer_id
+order_items.order_id > orders.order_id
+order_items.inventory_id > inventory.inventory_id
+inventory.product_id > products.product_id
+payments.order_id > orders.order_id
+shipments.order_id > orders.order_id
+
