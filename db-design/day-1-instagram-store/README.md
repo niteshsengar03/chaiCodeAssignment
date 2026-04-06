@@ -124,7 +124,3 @@ one order can have multiple shipments also sometimes.
 - payment and shipment separated to keep things clean
 - tried to keep it simple will improve in next one also will try to add more colors and icons 
 
----
-
-## ER Diagram (eraser.io)
-
