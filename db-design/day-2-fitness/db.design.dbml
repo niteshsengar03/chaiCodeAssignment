@@ -1,0 +1,103 @@
+clients {
+  client_id string pk
+  name string 
+  email string
+  hashPassword string
+  phone string
+  gender string
+  dob Date //Date of Birth
+  height string
+  createdAt Date
+  updatedAt Date
+}
+trainers[icon: gcp-administration]{
+  trainer_id string pk
+  name string 
+  email string
+  hashPassword string
+  phone string
+  photo string
+  is_active boolean
+  createdAt Date
+  updatedAt Date
+}
+plans[]{
+  plan_id string pk
+  trainer_id fk
+  title string
+  description string
+  plan_type string
+  duration_time Date
+  price decimal
+
+  createdAt Date
+  updateAt Date
+}
+subscriptions[]{
+  subscription_id string pk
+  client_id string fk
+  plan_id string fk
+  start_date Date
+  end_date Date
+  billing_cycle enum("montly","weekly")
+  next_billing_date Date
+  status enum("active","cancelled","paused")
+  createdAt Date
+  updateAt Date
+}
+progress[]{
+  id string pk
+  checkin_id string fk
+  weight_kg decimal 
+  body_fat decimal 
+  chest decimal
+  waist decimal
+  arm decimal
+  thigh decimal 
+  hip decimal
+  createdAt Date
+  updateAt Date
+}
+sessions[]{
+  session_id string pk
+  subscription_id string fk
+  session_type string
+  scheduled_at Date
+  duration_time int 
+  meeting_link string
+  createdAt Date
+  updateAt Date
+}
+checkins {
+  checkin_id string pk
+  subscription_id string fk
+  checkin_week int 
+  submitted_at timestamp
+  trainer_feedback string
+  status boolean
+  createdAt Date
+  updateAt Date
+}
+
+payments{
+  payment_id string pk
+  subscription_id string fk
+  amount decimal
+  payment_status boolean
+  paid_at timestamp
+  createdAt Date 
+  updateAt Date
+  }
+
+
+trainers.id < plans.trainer_id
+clients.client_id <subscriptions.client_id
+plans.plan_id < subscriptions.plan_id
+// there will be mutiple payment for 
+// one subscription because we are taking
+// weekly or montly billing also
+subscriptions.subscription_id < payments.subscription_id
+subscriptions.subscription_id < sessions.subscription_id
+subscriptions.subscription_id < checkin.subscription_id
+
+checkins.checkin_id  - progress.checkin_id
