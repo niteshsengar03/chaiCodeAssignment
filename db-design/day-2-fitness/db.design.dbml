@@ -6,7 +6,7 @@ clients {
   phone string
   gender string
   dob Date //Date of Birth
-  height string
+  height decimal
   createdAt Date
   updatedAt Date
 }
@@ -90,7 +90,7 @@ payments{
   }
 
 
-trainers.id < plans.trainer_id
+trainers.trainer_id < plans.trainer_id
 clients.client_id <subscriptions.client_id
 plans.plan_id < subscriptions.plan_id
 // there will be mutiple payment for 
@@ -98,6 +98,7 @@ plans.plan_id < subscriptions.plan_id
 // weekly or montly billing also
 subscriptions.subscription_id < payments.subscription_id
 subscriptions.subscription_id < sessions.subscription_id
-subscriptions.subscription_id < checkin.subscription_id
+subscriptions.subscription_id < checkins.subscription_id
 
 checkins.checkin_id  - progress.checkin_id
+
