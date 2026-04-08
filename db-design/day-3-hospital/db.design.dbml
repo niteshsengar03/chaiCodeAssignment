@@ -1,0 +1,150 @@
+title clinic
+patients[color:blue] {
+  patient_id string pk
+  name string
+  email string
+  phone string
+  gender string
+  dob date
+  address_id string
+  created_at timestamp
+  updated_at timestamp
+}
+
+adresses[color:blue]{
+  address_id string pk
+  addressLine string
+  state string
+  pincode string
+}
+
+patients.address_id - adresses.address_id
+
+
+doctors[color:blue]{
+  doctor_id string pk
+  name string
+  email string
+  phone string
+  is_active boolean
+  created_at timestamp
+  updated_at timestamp
+}
+
+// keep menu for all specialites
+specialties[color:blue] {
+  specialty_id string pk
+  name string
+  description string
+  created_at timestamp
+  updated_at timestamp
+}
+
+//middle table
+doctor_specialties[color:blue] {
+  id string pk
+  doctor_id string fk
+  specialty_id string fk
+}
+doctors.doctor_id < doctor_specialties.doctor_id
+specialties.specialty_id < doctor_specialties.specialty_id
+
+appointments[color:green] {
+  appointment_id string pk
+  patient_id string fk
+  doctor_id string fk
+  scheduled_at timestamp
+  reason string
+  status enum("booked","confirmed","cancelled")
+  booked_at timestamp
+  created_at timestamp
+  updated_at timestamp
+}
+
+patients.patient_id < appointments.patient_id
+doctors.doctor_id < appointments.doctor_id
+
+consultations[color:green] {
+  consultation_id string pk
+  appointment_id string fk
+  diagnosis string
+  notes string
+  follow_up_required boolean
+  created_at timestamp
+  updated_at timestamp
+}
+
+tests[color:yellow] {
+  test_id string pk
+  name string
+  description string
+  base_price decimal
+  created_at timestamp
+  updated_at timestamp
+}
+
+consultation_tests[color:yellow] {
+  id string pk
+  consultation_id string fk
+  test_id string fk
+  prescribed_at timestamp
+  test_status enum("in_progress","completed","cancelled")
+  notes string
+  created_at timestamp
+  updated_at timestamp
+}
+
+reports[color:yellow] {
+  report_id string pk
+  consultation_test_id string fk
+  reviewed_by_doctor_id string fk
+  report_status enum("in_progress","completed","cancelled")
+  report_url string
+  created_at timestamp
+  updated_at timestamp
+}
+
+bills[color:orange] {
+  bill_id string pk
+  appointment_id string fk
+  consultation_id string fk
+  bill_type enum("appointment","consultation")
+  total_amount decimal
+  bill_status enum("paid","unpaid","cancelled")
+  due_date timestamp
+  created_at timestamp
+  updated_at timestamp
+}
+
+
+payments[color:orange]{
+  payment_id string pk
+  bill_id string fk
+  amount decimal
+  payment_method enum("cash","card","upi","online")
+  payment_status enum("pending","paid","failed")
+  created_at timestamp
+  updated_at timestamp
+}
+
+
+
+
+
+
+appointments.appointment_id - consultations.appointment_id
+
+
+consultations.consultation_id < consultation_tests.consultation_id
+tests.test_id < consultation_tests.test_id
+
+consultation_tests.id < reports.consultation_test_id
+doctors.doctor_id < reports.reviewed_by_doctor_id
+
+
+appointments.appointment_id < bills.appointment_id
+consultations.consultation_id < bills.consultation_id
+
+
+
+bills.bill_id < payments.bill_id
