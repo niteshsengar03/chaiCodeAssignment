@@ -19,8 +19,8 @@ first thing i did was read the problem and listed out what are the "things" in t
 - the full entry-to-exit journey is a **session**
 - at the end a **payment** is made
 
-once i had those things i asked myself — what are the "lookup/category" things vs the "live data" things. category stuff like vehicle type and spot type don't change much, and they're basically reference data. the live stuff is sessions, tickets, payments.
-
+once i had those things i asked myself — what are the "lookup/category" things vs the "live data" things. category stuff like vehicle type and spot type don't change much, and they're basically reference data. the live stuff is sessions, tickets, payments, also instead of using enums i just used strings and commented 
+the enums, so i'm treating those as enums 
 ---
 
 ## Color Groups and Why
@@ -57,8 +57,7 @@ basically every important business question goes through `parking_session`. you 
 i know centralizing like this creates a bottleneck — if `parking_session` table has issues, everything suffers. but i made this call because:
 
 1. **it's the most critical table from a business perspective** — nothing else matters if you can't track a session
-2. the alternative would be spreading the connections across multiple tables which makes queries harder and doesn't really help
-3. in a real production setup you'd just make sure this table is rock solid — indexed properly, replicated, etc.
+2. the alternative would be spreading the connections across multiple tables.
 
 ---
 
@@ -148,7 +147,6 @@ yes. query `parking_session` where `exit_time IS NULL`. join with `vehicle` to g
 
 - no separate availability table — redundant, session data handles it
 - no rate table in the db — rate calculation is application logic, db just stores the result in `fee_calculated`
-- no access control / user auth tables — out of scope for parking db design
 - no junction table between vehicle_category and spot_category — the assignment happens at session level, not as a pre-defined mapping. it's business logic.
 
 ---
