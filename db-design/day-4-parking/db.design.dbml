@@ -1,0 +1,136 @@
+
+
+// COLOR GROUPS
+// Blue   → Core Vehicle Entities
+// Green  → Parking Infrastructure (Zones, Spots)
+// Orange → Session & Ticket Flow (main flow)
+// Purple → Payment
+// Red    → Category / Reference Tables (lookup)
+
+
+// ─── RED: Category / Reference Tables ────────
+vehicle_categories [color: red] {
+  id          integer pk
+  name        string    // Bike, Car, SUV, Cab, EV
+  description string
+}
+
+spot_categories [color: red] {
+  id          integer pk
+  name        string    // General, VIP, Exhibitor, Cosplayer, Staff, EV_Charging
+  description string
+}
+
+
+// ─── BLUE: Core Vehicle Entity ────────────────
+vehicles [color: blue] {
+  id                   integer pk
+  license_plate        string    // unique identifier of the vehicle
+  owner_name           string
+  contact_number       string
+  vehicle_category_id  integer   fk
+}
+
+
+// ─── GREEN: Parking Infrastructure ───────────
+parking_zones [color: green] {
+  id          integer pk
+  name        string    // Zone A, Zone B, Zone VIP etc
+  level       string    // Ground, Level-1, Level-2 etc
+  total_spots integer
+}
+
+parking_spots [color: green] {
+  id               integer pk
+  spot_number      string    // A-001, B-012 etc
+  parking_zone_id  integer   fk
+  spot_category_id integer   fk
+  is_active        boolean   // soft flag to disable a spot if damaged
+}
+
+// availability is tracked indirectly via parking_sessions
+// a spot is "occupied" when a session exists with that spot_id and no exit_time
+// a spot is "free" when either no session exists, or latest session has exit_time filled
+
+
+// ─── ORANGE: Session & Ticket (Main Flow) ─────
+
+// Ticket is issued at entry — it is the entry document
+// Session holds the full lifecycle: entry → spot assigned → exit → linked to payment
+// Kept them separate because ticket is a point-in-time document
+// and session is a duration-based record tied to billing
+
+parking_tickets [color: orange] {
+  id            integer pk
+  ticket_number string    // human-readable: TKT-20240501-001
+  issued_at     timestamp
+  vehicle_id    integer   fk
+}
+
+parking_sessions [color: orange] {
+  id               integer pk
+  vehicle_id       integer   fk
+  parking_spot_id  integer   fk
+  ticket_id        integer   fk
+  entry_time       timestamp
+  exit_time        timestamp   // null means vehicle is still parked
+  fee_calculated   decimal
+  session_date     date        // helps query "all entries on day 2 of event"
+}
+
+// parking_sessions is the CENTRAL table of this design
+// vehicle_id → who parked
+// parking_spot_id → where they parked
+// ticket_id → what ticket was issued
+// entry/exit times → full session lifecycle
+// fee_calculated → amount before payment
+// All queries funnel through this table
+
+
+// ─── PURPLE: Payment ─────────────────────────
+payments [color: purple] {
+  id                  integer pk
+  parking_session_id  integer   fk
+  amount              decimal
+  payment_method      string    // Cash, Card, UPI, etc
+  payment_status      string    // Pending, Completed, Failed
+  paid_at             timestamp
+}
+
+// Payment directly references parking_sessions (not tickets)
+// because billing is based on duration (entry to exit), which lives in session
+
+
+// ─── RELATIONSHIPS ────────────────────────────
+
+// vehicle_categories → vehicles (One to Many)
+// one category can have many vehicles
+vehicle_categories.id < vehicles.vehicle_category_id
+
+// spot_categories → parking_spots (One to Many)
+// one spot category can tag many spots
+spot_categories.id < parking_spots.spot_category_id
+
+// parking_zones → parking_spots (One to Many)
+// one zone has many spots
+parking_zones.id < parking_spots.parking_zone_id
+
+// vehicles → parking_tickets (One to Many)
+// one vehicle can have many tickets across multiple visits
+vehicles.id < parking_tickets.vehicle_id
+
+// vehicles → parking_sessions (One to Many)
+// one vehicle can have many sessions (multiple visits across event days)
+vehicles.id < parking_sessions.vehicle_id
+
+// parking_spots → parking_sessions (One to Many)
+// one spot can be reused across many sessions over time
+parking_spots.id < parking_sessions.parking_spot_id
+
+// parking_tickets → parking_sessions (One to One)
+// each ticket maps to exactly one session
+parking_tickets.id - parking_sessions.ticket_id
+
+// parking_sessions → payments (One to One)
+// each session has one payment record
+parking_sessions.id - payments.parking_session_id
