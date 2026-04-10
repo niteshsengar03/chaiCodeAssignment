@@ -1,0 +1,208 @@
+
+// COLOR GROUPS
+// Red    → Reference / Lookup Tables (status enums, direction types)
+// Blue   → Core Infrastructure Entities (building, floor, shaft, elevator)
+// Green  → Servicing Layer (which elevator serves which floor — the M:M bridge)
+// Orange → Operational Flow (requests, ride assignments — the main flow)
+// Purple → Analytics & Maintenance (ride logs, maintenance history)
+
+
+// ─── RED: Reference / Lookup Tables ───────────
+// keeping status types as tables (not enums) so ops team can add new states without migration
+
+elevator_statuses [color: red] {
+  id     integer pk
+  label  string    // Idle, Moving_Up, Moving_Down, Out_of_Service, Under_Maintenance
+}
+
+request_statuses [color: red] {
+  id     integer pk
+  label  string    // Pending, Assigned, Completed, Cancelled
+}
+
+
+// ─── BLUE: Core Infrastructure Entities ───────
+// these are the physical building blocks of the system
+// they don't change often — setup once, referenced everywhere
+
+buildings [color: blue] {
+  id           integer pk
+  name         string    // e.g. "Infinity Towers Block A", "Phoenix Mall Wing 2"
+  city         string
+  total_floors integer
+  created_at   timestamp
+}
+
+floors [color: blue] {
+  id           integer pk
+  building_id  integer   fk
+  floor_number integer   // -2 for basement, 0 for ground, 1, 2, 3...
+  label        string    // "Basement 2", "Ground Floor", "Level 12" — human readable
+}
+
+elevator_shafts [color: blue] {
+  id          integer pk
+  building_id integer   fk
+  shaft_label string    // "Shaft-A", "Shaft-3" — physical shaft identifier
+}
+
+elevators [color: blue] {
+  id               integer pk
+  shaft_id         integer   fk
+  building_id      integer   fk
+  name             string    // "Lift-1", "Lift-West-B" — operator-facing label
+  capacity         integer   // max persons
+  min_floor        integer   // lowest floor this elevator travel to
+  max_floor        integer   // highest floor this elevator goes up to
+  status_id        integer   fk   // current operational status
+  current_floor    integer   // real-time position — updated by system
+  installed_at     date
+}
+
+// NOTE: current_floor and status_id are kept on elevator table intentionally
+// they are real-time config values that the control system reads/writes constantly
+// they are NOT historical — history lives in ride_logs (purple)
+// if we put status in a separate table we'd need a join on every status check
+// which makes real-time control ops slower. practical tradeoff.
+
+
+// ─── GREEN: Servicing Layer ───────────────────
+// elevators serve multiple floors, floors can be served by multiple elevators
+// this is a proper M:M — needs a junction table
+
+elevator_floor_assignments [color: green] {
+  id          integer pk
+  elevator_id integer   fk
+  floor_id    integer   fk
+}
+
+// one row = "this elevator can stop at this floor"
+// e.g. a service elevator might only serve B1, B2, G, 1, 2
+// a high-speed express might only serve G, 10, 20, 30
+// this makes it easy to check which elevators can service a requested floor
+
+
+// ─── ORANGE: Operational Flow (Main Flow) ─────
+// this is where the live action happens every day
+
+// floor_requests is the entry point — user presses a button on any floor
+floor_requests [color: orange] {
+  id              integer pk
+  floor_id        integer   fk   // which floor the request came from
+  building_id     integer   fk   // denormalized for fast query — avoids floor→building join
+  direction       string        // "Up" or "Down" — which direction the user wants to go
+  requested_at    timestamp
+  status_id       integer   fk   // Pending, Assigned, Completed, Cancelled
+}
+
+// ride_assignments is the control system's response to a request
+// one request → one assignment (one elevator handles it)
+ride_assignments [color: orange] {
+  id               integer pk
+  request_id       integer   fk   // which request triggered this
+  elevator_id      integer   fk   // which elevator was assigned
+  destination_floor integer       // where the user wants to go (entered inside cabin)
+  assigned_at      timestamp
+  pickup_at        timestamp       // when elevator actually arrived at the source floor
+  dropoff_at       timestamp       // when user was dropped at destination floor
+}
+
+// ride_assignments is the CENTRAL TABLE of this design (after parking_session concept)
+// it connects: request → elevator → source floor → destination floor → timestamps
+// every operational question (pending requests, elevator load, response time) answers through here
+
+
+// ─── PURPLE: Analytics & Maintenance ─────────
+// these exist purely for history, reporting, and ops safety
+// they should never be mixed with live config data
+
+ride_logs [color: purple] {
+  id                  integer pk
+  ride_assignment_id  integer   fk
+  elevator_id         integer   fk   // denormalized for fast analytics queries
+  building_id         integer   fk   // denormalized for building-level reports
+  started_at          timestamp
+  ended_at            timestamp
+  floors_travelled    integer   // for efficiency scoring
+  logged_at           timestamp
+}
+
+// ride_logs is the audit trail — it records what actually happened
+// ride_assignments is what was planned/dispatched
+// they're separate because an assignment might get cancelled, but if a partial ride happened it still needs logging
+
+maintenance_records [color: purple] {
+  id           integer pk
+  elevator_id  integer   fk
+  started_at   timestamp
+  ended_at     timestamp       // null means maintenance is still ongoing
+  reason       string
+  performed_by string          // technician name or team
+  notes        string
+  is_resolved  boolean
+}
+
+// maintenance never modifies the elevator entity beyond status_id
+// full history is preserved here — you can see every downtime period and why
+
+
+// ─── RELATIONSHIPS ─────────────────────────────
+
+// buildings → floors (One to Many)
+// one building has many floors
+buildings.id < floors.building_id
+
+// buildings → elevator_shafts (One to Many)
+// one building has many shafts
+buildings.id < elevator_shafts.building_id
+
+// elevator_shafts → elevators (One to One)
+// one shaft has exactly one elevator (as per problem statement)
+elevator_shafts.id - elevators.shaft_id
+
+// buildings → elevators (One to Many)
+// denormalized FK to query all elevators in a building without going through shaft
+buildings.id < elevators.building_id
+
+// elevator_statuses → elevators (One to Many)
+// many elevators can share the same status label
+elevator_statuses.id < elevators.status_id
+
+// elevators ↔ floors (Many to Many via elevator_floor_assignments)
+elevators.id < elevator_floor_assignments.elevator_id
+floors.id < elevator_floor_assignments.floor_id
+
+// floors → floor_requests (One to Many)
+// one floor can generate many requests over time
+floors.id < floor_requests.floor_id
+
+// buildings → floor_requests (One to Many)
+// denormalized for fast building-level query
+buildings.id < floor_requests.building_id
+
+// request_statuses → floor_requests (One to Many)
+request_statuses.id < floor_requests.status_id
+
+// floor_requests → ride_assignments (One to One)
+// each request maps to exactly one assignment
+floor_requests.id - ride_assignments.request_id
+
+// elevators → ride_assignments (One to Many)
+// one elevator handles many ride assignments over time
+elevators.id < ride_assignments.elevator_id
+
+// ride_assignments → ride_logs (One to One)
+// each assignment (if completed) produces one log entry
+ride_assignments.id - ride_logs.ride_assignment_id
+
+// elevators → ride_logs (One to Many)
+// denormalized FK for analytics — filter logs by elevator directly
+elevators.id < ride_logs.elevator_id
+
+// buildings → ride_logs (One to Many)
+// denormalized FK for building-level usage reports
+buildings.id < ride_logs.building_id
+
+// elevators → maintenance_records (One to Many)
+// one elevator can have many maintenance history entries
+elevators.id < maintenance_records.elevator_id
