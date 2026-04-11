@@ -14,7 +14,7 @@
 - [ ] Complete remaining TODOs
 - [ ] Explore `process.exit()` and related functions
 - [ ] Write blog on serialization and deserialization
-- [ ] Draw on Excalidraw / eco-map and make a video
+- [x] Draw on Excalidraw -> https://excalidraw.com/#room=9a07cc7aa222942f83c6,YmB2ES592eW30hGyMjYHeg
 
 ---
 
