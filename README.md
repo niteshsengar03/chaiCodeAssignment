@@ -2,7 +2,10 @@
 
 ## Main-class Assignment
 
-
+### auth
+- [ ] create own oAuth
+- [ ] write blog on linux interesting file System
+- [ ] create million ticks 
 ### OOJ
 - [ ] cerate own polyfill library for string arrays to learn prototye and this 
 
@@ -42,3 +45,5 @@
 - [ ] js-datatypes
 - [ ] js-async-oops
 - [ ] js-dom
+- [ ] express-crud
+- [ ] express-auth
